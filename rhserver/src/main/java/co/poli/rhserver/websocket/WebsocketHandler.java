@@ -1,7 +1,7 @@
 package co.poli.rhserver.websocket;
 
-import co.poli.rhserver.model.Empleado;
 import co.poli.rhserver.dto.Mensaje;
+import co.poli.rhserver.model.Empleado;
 import co.poli.rhserver.service.EmpleadoService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,14 +16,10 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
 public class WebsocketHandler extends TextWebSocketHandler {
     private static final Logger log = LoggerFactory.getLogger(WebsocketHandler.class);
-
-    private final CopyOnWriteArrayList<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
-
     private final EmpleadoService empleadoService;
     private final ObjectMapper mapper;
 
@@ -36,23 +32,20 @@ public class WebsocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         log.info("Se ha unido el usuario {}", session.getId());
-        sessions.add(session);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         log.info("Se ha desconectado el usuario {}", session.getId());
-        sessions.remove(session);
     }
 
     @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) {
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
         try {
             String payload = message.getPayload();
-            System.out.println(payload);
             JsonNode jsonNode = mapper.readTree(payload);
             Mensaje mensaje = mapper.treeToValue(jsonNode, Mensaje.class);
-            log.info("Usuario {}, acción {}", session.getId(), mensaje.getAccion());
+            log.info("Usuario: {}, acción: {}, datos: {}", session.getId(), mensaje.getAccion(), mensaje.getDatos());
 
             switch (mensaje.getAccion()) {
                 case "CREAR_EMPLEADO" -> crearEmpleado(session, mensaje.getDatos());
@@ -60,42 +53,65 @@ public class WebsocketHandler extends TextWebSocketHandler {
                 case "CONSULTAR_EMPLEADOS" -> consultarTodosEmpleados(session);
                 case "ACTUALIZAR_EMPLEADO" -> actualizarEmpleado(session, mensaje.getDatos());
                 case "ELIMINAR_EMPLEADO" -> eliminarEmpleado(session, mensaje.getDatos());
-                default -> log.error("Acción no encontrada");
+                default -> throw new WebsocketError("Acción no valida");
             }
 
         } catch (Exception e) {
             log.error("Error ", e);
+            enviarRespuesta(session, new Mensaje("ERROR", e.getMessage()));
         }
     }
 
     private void crearEmpleado(WebSocketSession session, Object datos) throws IOException {
-        Empleado nuevoEmpleado = mapper.convertValue(datos, Empleado.class);
-        Empleado empleadoGuardado = empleadoService.guardar(nuevoEmpleado);
-        enviarRespuesta(session, empleadoGuardado);
+        try {
+            Empleado nuevoEmpleado = mapper.convertValue(datos, Empleado.class);
+            empleadoService.guardar(nuevoEmpleado);
+            enviarRespuesta(session, "Empleado registrado con éxito");
+        } catch (WebsocketError e) {
+            enviarRespuesta(session, new Mensaje("ERROR", e.getMessage()));
+        }
+
     }
 
     private void consultarEmpleado(WebSocketSession session, Object datos) throws IOException {
-        Integer id = Integer.parseInt((String) datos);
-        Empleado empleado = empleadoService.consultarPorId(id);
-        enviarRespuesta(session, empleado);
+        try {
+            Integer id = Integer.parseInt((String) datos);
+            Empleado empleado = empleadoService.consultarPorId(id);
+            enviarRespuesta(session, empleado);
+        } catch (Exception e) {
+            enviarRespuesta(session, new Mensaje("ERROR", e.getMessage()));
+        }
     }
 
     private void consultarTodosEmpleados(WebSocketSession session) throws IOException {
-        List<Empleado> empleados = empleadoService.consultarTodos();
-        enviarRespuesta(session, empleados);
+        try {
+            List<Empleado> empleados = empleadoService.consultarTodos();
+            enviarRespuesta(session, empleados);
+        } catch (Exception e) {
+            enviarRespuesta(session, new Mensaje("ERROR", e.getMessage()));
+        }
     }
 
     private void actualizarEmpleado(WebSocketSession session, Object datos) throws IOException {
-        Empleado empleado = mapper.convertValue(datos, Empleado.class);
-        Empleado empleadoActualizado = empleadoService.guardar(empleado);
-        enviarRespuesta(session, empleadoActualizado);
+        try {
+            Empleado empleado = mapper.convertValue(datos, Empleado.class);
+            empleadoService.guardar(empleado);
+            enviarRespuesta(session, "Empleado actualizado con éxito");
+        } catch (WebsocketError e) {
+            enviarRespuesta(session, new Mensaje("ERROR", e.getMessage()));
+        }
+
     }
 
     private void eliminarEmpleado(WebSocketSession session, Object datos) throws IOException {
-        Integer id = Integer.parseInt((String) datos);
-        empleadoService.eliminar(id);
-        TextMessage textMessage = new TextMessage("Empleado eliminado con éxito");
-        session.sendMessage(textMessage);
+        try {
+            Integer id = Integer.parseInt((String) datos);
+            empleadoService.eliminar(id);
+            TextMessage textMessage = new TextMessage("Empleado eliminado con éxito");
+            session.sendMessage(textMessage);
+        } catch (WebsocketError e) {
+            enviarRespuesta(session, new Mensaje("ERROR", e.getMessage()));
+        }
     }
 
     private void enviarRespuesta(WebSocketSession session, Object respuesta) throws IOException {

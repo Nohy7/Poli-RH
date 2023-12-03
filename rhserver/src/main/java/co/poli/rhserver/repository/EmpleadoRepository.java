@@ -10,5 +10,9 @@ import java.util.List;
 @Repository
 public interface EmpleadoRepository extends CrudRepository<Empleado, Integer> {
 
+    @Query(value = "SELECT * FROM empleados WHERE empl_activo = true", nativeQuery = true)
     List<Empleado> findAll();
+
+    @Query(value = "SELECT * FROM empleados WHERE empl_activo = true AND empl_id = :id", nativeQuery = true)
+    Empleado findByID(Integer id);
 }

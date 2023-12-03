@@ -3,13 +3,12 @@
 <head>
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>WebSocket CRUD Example</title>
+    <title>Recusos Humanos Cliente</title>
 </head>
 <body>
-    <h1>WebSocket CRUD Example</h1>
-
+    <h1 id="1">WebSocket CRUD Example</h1>
     <button onclick='crearEmpleado()'>Crear Empleado</button>
-    <button onclick='consultarEmpleadoPorId(11)'>Consultar Empleado por ID</button>
+    <button onclick='consultarEmpleadoPorId(12)'>Consultar Empleado por ID</button>
     
     <script>
         const socket = new WebSocket('ws://localhost:8080/poli-rh');
@@ -18,12 +17,7 @@
             console.log('Conexión establecida con el servidor WebSocket');
         });
 
-        socket.addEventListener('message', (event) => {
-            const message = JSON.parse(event.data);
-            console.log('Mensaje recibido:', message);
-
-            
-        });
+     
 
         socket.addEventListener('close', (event) => {
             console.log('Conexión cerrada con el servidor WebSocket');
@@ -33,6 +27,15 @@
             console.error('Error en la conexión WebSocket:', event);
         });
 
+
+
+        socket.addEventListener('message', (event) => {
+            const message = JSON.parse(event.data);
+            console.log('Mensaje recibido:', message);
+            let titulo = document.getElementById("1").s
+            
+        });
+
         function crearEmpleado() {
             const accion = 'CREAR_EMPLEADO';
             const datos = {
@@ -40,12 +43,12 @@
                 emplPrimerNombre: 'John',
                 emplSegundoNombre: 'Doe',
                 emplEmail: 'john.doe3@example.com',
-                emplFechaNacimiento: '1990-01-01',
+                emplFechaNac: '1990-01-01',
                 emplSueldo: 50000,
                 emplComision: 1000,
-                emplCargoId: null,
+                emplCargoId: 1,
                 emplGerenteId: null,
-                emplDptoId: null
+                emplDptoId: 1
             };
 
             const mensaje = { accion, datos };

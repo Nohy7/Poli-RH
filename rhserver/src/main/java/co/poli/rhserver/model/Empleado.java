@@ -22,6 +22,8 @@ public class Empleado {
     private Integer emplGerenteId;
     private Integer emplDptoId;
 
+    private Boolean emplActivo;
+
     public Integer getEmplId() {
         return emplId;
     }
@@ -100,5 +102,13 @@ public class Empleado {
 
     public void setEmplDptoId(Integer emplDptoId) {
         this.emplDptoId = emplDptoId;
+    }
+
+    public Boolean getEmplActivo() {
+        return emplActivo;
+    }
+
+    public void setEmplActivo(Boolean emplActivo) {
+        this.emplActivo = emplActivo;
     }
 }
