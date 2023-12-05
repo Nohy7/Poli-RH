@@ -66,7 +66,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
         try {
             Empleado nuevoEmpleado = mapper.convertValue(datos, Empleado.class);
             empleadoService.guardar(nuevoEmpleado);
-            enviarRespuesta(session, "Empleado registrado con éxito");
+            enviarRespuesta(session, new Mensaje("CREAR_EMPLEADO", "Empleado registrado con éxito"));
         } catch (WebsocketError e) {
             enviarRespuesta(session, new Mensaje("ERROR", e.getMessage()));
         }
@@ -77,7 +77,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
         try {
             Integer id = Integer.parseInt((String) datos);
             Empleado empleado = empleadoService.consultarPorId(id);
-            enviarRespuesta(session, empleado);
+            enviarRespuesta(session, new Mensaje("CONSULTAR_EMPLEADO", empleado));
         } catch (Exception e) {
             enviarRespuesta(session, new Mensaje("ERROR", e.getMessage()));
         }
@@ -86,7 +86,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
     private void consultarTodosEmpleados(WebSocketSession session) throws IOException {
         try {
             List<Empleado> empleados = empleadoService.consultarTodos();
-            enviarRespuesta(session, empleados);
+            enviarRespuesta(session, new Mensaje("CONSULTAR_EMPLEADOS", empleados));
         } catch (Exception e) {
             enviarRespuesta(session, new Mensaje("ERROR", e.getMessage()));
         }
@@ -96,7 +96,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
         try {
             Empleado empleado = mapper.convertValue(datos, Empleado.class);
             empleadoService.guardar(empleado);
-            enviarRespuesta(session, "Empleado actualizado con éxito");
+            enviarRespuesta(session, new Mensaje("ACTUALIZAR_EMPLEADO", "Empleado actualizado con éxito"));
         } catch (WebsocketError e) {
             enviarRespuesta(session, new Mensaje("ERROR", e.getMessage()));
         }
@@ -107,8 +107,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
         try {
             Integer id = Integer.parseInt((String) datos);
             empleadoService.eliminar(id);
-            TextMessage textMessage = new TextMessage("Empleado eliminado con éxito");
-            session.sendMessage(textMessage);
+            enviarRespuesta(session, new Mensaje("ELIMINAR_EMPLEADO", "Empleado eliminado con éxito"));
         } catch (WebsocketError e) {
             enviarRespuesta(session, new Mensaje("ERROR", e.getMessage()));
         }

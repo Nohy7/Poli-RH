@@ -6,6 +6,7 @@ import co.poli.rhserver.repository.EmpleadoRepository;
 import co.poli.rhserver.websocket.WebsocketError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -43,6 +44,7 @@ public class EmpleadoService {
         return  empleado;
     }
 
+    @Transactional
     public void eliminar(Integer id) throws WebsocketError {
         Empleado empleado = consultarPorId(id);
         empleado.setEmplActivo(false);
