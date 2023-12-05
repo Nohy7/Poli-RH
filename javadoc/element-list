@@ -1,0 +1,6 @@
+co.poli.rhserver
+co.poli.rhserver.dto
+co.poli.rhserver.model
+co.poli.rhserver.repository
+co.poli.rhserver.service
+co.poli.rhserver.websocket

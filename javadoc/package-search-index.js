@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"co.poli.rhserver"},{"l":"co.poli.rhserver.dto"},{"l":"co.poli.rhserver.model"},{"l":"co.poli.rhserver.repository"},{"l":"co.poli.rhserver.service"},{"l":"co.poli.rhserver.websocket"}];updateSearchResults();

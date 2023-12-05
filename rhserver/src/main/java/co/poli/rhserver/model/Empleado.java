@@ -6,22 +6,67 @@ import jakarta.persistence.Table;
 
 import java.util.Date;
 
+/**
+ * Entidad que representa a un empleado en la base de datos.
+ */
 @Entity
 @Table(name = "empleados")
 public class Empleado {
 
+    /**
+     * Identificador único del empleado.
+     */
     @Id
     private Integer emplId;
+
+    /**
+     * Primer nombre del empleado.
+     */
     private String emplPrimerNombre;
+
+    /**
+     * Segundo nombre del empleado.
+     */
     private String emplSegundoNombre;
+
+    /**
+     * Dirección de correo electrónico del empleado.
+     */
     private String emplEmail;
+
+    /**
+     * Fecha de nacimiento del empleado.
+     */
     private Date emplFechaNac;
+
+    /**
+     * Sueldo del empleado.
+     */
     private Integer emplSueldo;
+
+    /**
+     * Comisión del empleado.
+     */
     private Integer emplComision;
+
+    /**
+     * Identificador del cargo del empleado.
+     */
     private Integer emplCargoId;
+
+    /**
+     * Identificador del gerente del empleado.
+     */
     private Integer emplGerenteId;
+
+    /**
+     * Identificador del departamento del empleado.
+     */
     private Integer emplDptoId;
 
+    /**
+     * Estado de activación del empleado.
+     */
     private Boolean emplActivo;
 
     public Integer getEmplId() {
